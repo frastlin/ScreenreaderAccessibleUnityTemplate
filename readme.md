@@ -4,7 +4,7 @@ This is a Unity template that only requires the editor to play.
 1. [install Unity]( <https://store.unity.com/download?ref=personal>)
 2. [Create an Unity ID]( <https://id.unity.com/en/conversations/a5947373-c6dd-4d10-807e-7eabee1af0db007f?view=register>)
 (Note that there is an accessibility captcha, just arrow down till you hear the get accessible option).
-3. Download this project
+3. [Download this project](https://github.com/frastlin/ScreenreaderAccessibleUnityTemplate/archive/master.zip)
 4. Change the lines in `ScreenreaderAccessibleUnityTemplate\Assets\libraries\debugger.cs` to point to where you wish your logs to be saved
 5. Run MainScene.unity and get some sighted help to log into your Unity account and open the scene for the first time. (Note that it may be possible to do this with a screen reader, it is just very difficult and only takes 5 seconds for a sighted person to do once)
 6. Once the main scene has imported all the assets, there should be a screen titled: `Unity Personal (64bit) - MainScene.unity - ScreenreaderAccessibleUnityTemplate - PC, Mac & Linux Standalone <DX11>`
@@ -34,6 +34,6 @@ That has a list of features that should be made accessible. But it needs more vo
 * Document the build process for deploying finished games
 * Have a list of completed games in Unity by blind developers
 
-Contributing
+# Contributing
 Please create an issue or a pull request if you would like to add or change anything.
 
