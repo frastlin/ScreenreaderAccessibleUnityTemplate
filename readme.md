@@ -21,6 +21,7 @@ This is a Unity template that only requires the editor to play.
 # Unity Workflow
 The unity editor compiles all the scripts every time ctrl+p is pressed and the game runs. This means that one can have their text editor or visual studio up and when they save a change, they alt+tab to the Unity window and press ctrl+p and the new script compiles and runs. Once they test and wish to continue development, they press ctrl+p and the game view closes. Next time they press ctrl+p, the scripts recompile with new changes and so on.
 Anything in the assets folder is compiled, so there can be any structure to the assets folder one wishes. The only thing that needs to be there is the Resources folder for sounds and graphics.
+All the .meta files are there for version controll reasons and unity creates them. You can disable this, but it is not advised.
 
 # Advocating for Greater Editor Accessibility
 There is a
