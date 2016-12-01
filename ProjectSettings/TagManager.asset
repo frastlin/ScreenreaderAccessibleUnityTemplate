@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 2
+  tags:
+  - GameSession
+  - Space
+  - Enemy
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - 
+  - Water
+  - UI
+  - 
+  - 
+  - Enemy
+  - EnemyOnly
+  - Player
+  - AllButPlayer
+  - Background
+  - OrangePlayer
+  - GreenPlayer
+  - PurplePlayer
+  - AllPlayers
+  - OnlyAllPlayers
+  - RedBarrier
+  - OrangeBarrier
+  - GreenBarrier
+  - PurpleBarrier
+  - OrangeNoWall
+  - Camera
+  - Tram
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: BehindBackground
+    uniqueID: 2344596071
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: Background
+    uniqueID: 743013237
+    locked: 0
