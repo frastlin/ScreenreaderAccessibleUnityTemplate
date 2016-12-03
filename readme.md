@@ -13,7 +13,7 @@ This is a Unity template that only requires the editor to play.
 
 # Running Unity
 1. Open ` ScreenreaderAccessibleUnityTemplate\Assets\ MainScene.unity`
-2. Press alt and if “system” comes up, press escape and enter a couple times. Eventually a screen will show up that says `Unity Personal (64bit) - MainScene.unity - ScreenreaderAccessibleUnityTemplate - PC, Mac & Linux Standalone <DX11>`
+2. Read the title of the window with insert+t and if it says "unity" then your version of unity, press enter a couple times. Eventually a screen will show up that says `Unity Personal (64bit) - MainScene.unity - ScreenreaderAccessibleUnityTemplate - PC, Mac & Linux Standalone <DX11>`
 3. Press ctrl+o and navigate to the mainScene.unity file and hit enter. If a dialogue pops up saying that the scene you have chosen is not in the current project, open the scene anyways.
 4. Press ctrl+p, wait 4 seconds and the game has started. If you are running the default game, press space and a sound should play.
 5. To stop playing press ctrl+p again.
