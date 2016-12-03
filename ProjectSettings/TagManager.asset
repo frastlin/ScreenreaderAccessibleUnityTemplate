@@ -16,23 +16,23 @@ TagManager:
   - UI
   - 
   - 
-  - Enemy
-  - EnemyOnly
-  - Player
-  - AllButPlayer
-  - Background
-  - OrangePlayer
-  - GreenPlayer
-  - PurplePlayer
-  - AllPlayers
-  - OnlyAllPlayers
-  - RedBarrier
-  - OrangeBarrier
-  - GreenBarrier
-  - PurpleBarrier
-  - OrangeNoWall
-  - Camera
-  - Tram
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 

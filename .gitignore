@@ -1,2 +1,10 @@
 Library/
 *.bak
+/obj
+/Assembly-CSharp.csproj
+/Assembly-CSharp-Editor.csproj
+/Assembly-CSharp-Editor-firstpass.csproj
+/ScreenreaderAccessibleUnityTemplate.sln
+/Library
+/Assets/Unity_Logfile.txt.meta
+/Assets/Unity_Logfile.txt
