@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using System.Runtime.InteropServices;
 using UnityEngine.EventSystems;
+using System.Reflection;
 
 namespace Unity_Accessibility
 {
@@ -30,6 +31,7 @@ namespace Unity_Accessibility
 		static int compileErrorCounter = 0;
 		//static bool isCompiling = false;
 		static bool isPlaying = false;
+		static AudioClip errorSound = null;
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -73,11 +75,24 @@ namespace Unity_Accessibility
 			// Load Editor preferences
 			LoadPreferences();
 
+			Application.logMessageReceivedThreaded += OnUnityLogCallback;
+			SceneView.onSceneGUIDelegate += OnSceneViewCallback;
+			string errorSoundFile = "Assets/Plugins/Unity Accessibility/Sounds/error_sound.wav";
+			errorSound = AssetDatabase.LoadAssetAtPath(errorSoundFile, typeof(AudioClip)) as AudioClip;
+			if (errorSound == null)
+				Debug.LogError("Cannot load audio file: " + errorSoundFile);
+
+/*
 			if (!initialized)
 			{
 				Application.logMessageReceivedThreaded += OnUnityLogCallback;
+				SceneView.onSceneGUIDelegate += OnSceneViewCallback;
+				errorSound = AssetDatabase.LoadAssetAtPath("Plugins/Unity Accessibility/Sounds/error_sound", typeof(AudioClip)) as AudioClip;
+
 				initialized = true;
 			}
+*/
+
 			/*
 					if (IsEnabled)
 						Debug.Log("Unity GUI Accessibility loaded - use Ctrl-Shift Click to place objects.");
@@ -88,7 +103,6 @@ namespace Unity_Accessibility
 			//Debug.Log("NVDA Screen Reader found? " + nvdaController_testIfRunning());
 
 			//ID = GUIUtility.GetControlID(hashVal, FocusType.Passive);
-			SceneView.onSceneGUIDelegate += OnSceneViewCallback;
 		}
 
 		//////////////////////////////////////////////////////////////////////////
@@ -98,6 +112,9 @@ namespace Unity_Accessibility
 			// Say errors out loud
 			if (type == LogType.Error)
 			{
+				if (errorSound != null)
+					PlayClip(errorSound);
+
 				Unity_GUI_Accessibility.nvdaController_cancelSpeech();
 				string errorText = "Error";
 
@@ -147,19 +164,19 @@ namespace Unity_Accessibility
 
 		//////////////////////////////////////////////////////////////////////////
 
-/*
-		static public void StateChange()
-		{
-			//Debug.Log("State Change Called");
-			if (isPlaying && !EditorApplication.isPlaying)
-			{
-				nvdaController_cancelSpeech();
-				nvdaController_speakText("Stopping Game Mode.");
-				isPlaying = false;
-				EditorApplication.playmodeStateChanged -= StateChange;
-			}
-		}
-*/
+		/*
+				static public void StateChange()
+				{
+					//Debug.Log("State Change Called");
+					if (isPlaying && !EditorApplication.isPlaying)
+					{
+						nvdaController_cancelSpeech();
+						nvdaController_speakText("Stopping Game Mode.");
+						isPlaying = false;
+						EditorApplication.playmodeStateChanged -= StateChange;
+					}
+				}
+		*/
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -231,27 +248,27 @@ namespace Unity_Accessibility
 			//Debug.Log("GUIUtility.keyboardControl = " + GUIUtility.keyboardControl);
 			//Debug.Log("Highlighter.activeText = " + Highlighter.activeText);
 
-/*
-			// Count compile errors currently in the console
-			var logEntries = typeof(EditorWindow).Assembly.GetType("UnityEditorInternal.LogEntries");
-			logEntries.GetMethod("Clear").Invoke(new object(), null);
-			int errorCount = (int)logEntries.GetMethod("GetCount").Invoke(new object(), null);
-*/
+			/*
+						// Count compile errors currently in the console
+						var logEntries = typeof(EditorWindow).Assembly.GetType("UnityEditorInternal.LogEntries");
+						logEntries.GetMethod("Clear").Invoke(new object(), null);
+						int errorCount = (int)logEntries.GetMethod("GetCount").Invoke(new object(), null);
+			*/
 
-/*
-			if (!isCompiling && EditorApplication.isCompiling)
-			{
-				isCompiling = true;
-				//				nvdaController_cancelSpeech();
-				nvdaController_speakText("Compiling Code Changes. Please Wait. ");
-			}
-			if (isCompiling && !EditorApplication.isCompiling)
-			{
-				isCompiling = false;
-				//				nvdaController_cancelSpeech();
-				nvdaController_speakText("Compiling Finished. " + errorCount.ToString("0") + " errors.");
-			}
-*/
+			/*
+						if (!isCompiling && EditorApplication.isCompiling)
+						{
+							isCompiling = true;
+							//				nvdaController_cancelSpeech();
+							nvdaController_speakText("Compiling Code Changes. Please Wait. ");
+						}
+						if (isCompiling && !EditorApplication.isCompiling)
+						{
+							isCompiling = false;
+							//				nvdaController_cancelSpeech();
+							nvdaController_speakText("Compiling Finished. " + errorCount.ToString("0") + " errors.");
+						}
+			*/
 
 			if (EditorApplication.isPlayingOrWillChangePlaymode)
 			{
@@ -268,11 +285,15 @@ namespace Unity_Accessibility
 						// Hence the counter.
 						if (compileErrorCounter == 0)
 						{
+							if (errorSound != null)
+								PlayClip(errorSound);
+
 							++compileErrorCounter;
 						}
 						else
 						{
 							compileErrorCounter = 0;
+
 							nvdaController_cancelSpeech();
 							nvdaController_speakText("Cannot enter play mode because there are compile errors.");
 						}
@@ -284,7 +305,7 @@ namespace Unity_Accessibility
 							nvdaController_cancelSpeech();
 							nvdaController_speakText("Entering Game Mode.");
 							isPlaying = true;
-//							EditorApplication.playmodeStateChanged += StateChange;
+							//							EditorApplication.playmodeStateChanged += StateChange;
 						}
 					}
 				}
@@ -342,7 +363,18 @@ namespace Unity_Accessibility
 
 		//////////////////////////////////////////////////////////////////////////
 
+		public static void PlayClip(AudioClip clip)
+		{
 
+			var type = typeof(AudioImporter).Assembly.GetType("UnityEditor.AudioUtil");
+			var method = type.GetMethod(
+					"PlayClip",
+					BindingFlags.Static | BindingFlags.Public,
+					null,
+					new System.Type[] { typeof(AudioClip) }, null);
+
+			method.Invoke(null, new object[] { clip }	);
+		} 
 
 		//////////////////////////////////////////////////////////////////////////
 	}
