@@ -8,3 +8,5 @@ Library/
 /Library
 /Assets/Unity_Logfile.txt.meta
 /Assets/Unity_Logfile.txt
+Temp
+/*.suo
