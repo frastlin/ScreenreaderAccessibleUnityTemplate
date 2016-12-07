@@ -25,7 +25,7 @@ namespace Unity_Accessibility
 		//static int ID = -1;
 
 		static bool IsEnabled = true;
-		static bool initialized = false;
+		//static bool initialized = false;
 
 		static Object m_CurrentObject = null;
 		static int compileErrorCounter = 0;
@@ -109,6 +109,9 @@ namespace Unity_Accessibility
 
 		private static void OnUnityLogCallback(string logString, string stackTrace, LogType type)
 		{
+			if (!IsEnabled)
+				return;
+
 			// Say errors out loud
 			if (type == LogType.Error)
 			{
