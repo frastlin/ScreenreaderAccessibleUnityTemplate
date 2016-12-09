@@ -11,13 +11,13 @@ namespace Unity_Accessibility
 	[ExecuteInEditMode]
 	public class Unity_GUI_Accessibility
 	{
-		[DllImport("nvdaControllerClient64")]
+		[DllImport("nvdaControllerClient64.dll")]
 		public static extern int nvdaController_testIfRunning();
 
-		[DllImport("nvdaControllerClient64", CharSet = CharSet.Auto)]
+		[DllImport("nvdaControllerClient64.dll", CharSet = CharSet.Auto)]
 		public static extern int nvdaController_speakText(string text);
 
-		[DllImport("nvdaControllerClient64")]
+		[DllImport("nvdaControllerClient64.dll")]
 		public static extern int nvdaController_cancelSpeech();
 
 
@@ -31,7 +31,10 @@ namespace Unity_Accessibility
 		static int compileErrorCounter = 0;
 		//static bool isCompiling = false;
 		static bool isPlaying = false;
+
 		static AudioClip errorSound = null;
+		static AudioClip enterPlayModeSound = null;
+		static AudioClip leavePlayModeSound = null;
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -77,21 +80,33 @@ namespace Unity_Accessibility
 
 			Application.logMessageReceivedThreaded += OnUnityLogCallback;
 			SceneView.onSceneGUIDelegate += OnSceneViewCallback;
+
+			// Load sound files
 			string errorSoundFile = "Assets/Plugins/Unity Accessibility/Sounds/error_sound.wav";
 			errorSound = AssetDatabase.LoadAssetAtPath(errorSoundFile, typeof(AudioClip)) as AudioClip;
 			if (errorSound == null)
 				Debug.LogError("Cannot load audio file: " + errorSoundFile);
 
-/*
-			if (!initialized)
-			{
-				Application.logMessageReceivedThreaded += OnUnityLogCallback;
-				SceneView.onSceneGUIDelegate += OnSceneViewCallback;
-				errorSound = AssetDatabase.LoadAssetAtPath("Plugins/Unity Accessibility/Sounds/error_sound", typeof(AudioClip)) as AudioClip;
+			string enterPlayModeSoundFile = "Assets/Plugins/Unity Accessibility/Sounds/chime_up.wav";
+			enterPlayModeSound = AssetDatabase.LoadAssetAtPath(enterPlayModeSoundFile, typeof(AudioClip)) as AudioClip;
+			if (enterPlayModeSound == null)
+				Debug.LogError("Cannot load audio file: " + enterPlayModeSoundFile);
 
-				initialized = true;
-			}
-*/
+			string leavePlayModeSoundFile = "Assets/Plugins/Unity Accessibility/Sounds/chime_down.wav";
+			leavePlayModeSound = AssetDatabase.LoadAssetAtPath(leavePlayModeSoundFile, typeof(AudioClip)) as AudioClip;
+			if (leavePlayModeSound == null)
+				Debug.LogError("Cannot load audio file: " + leavePlayModeSoundFile);
+
+			/*
+						if (!initialized)
+						{
+							Application.logMessageReceivedThreaded += OnUnityLogCallback;
+							SceneView.onSceneGUIDelegate += OnSceneViewCallback;
+							errorSound = AssetDatabase.LoadAssetAtPath("Plugins/Unity Accessibility/Sounds/error_sound", typeof(AudioClip)) as AudioClip;
+
+							initialized = true;
+						}
+			*/
 
 			/*
 					if (IsEnabled)
@@ -100,7 +115,7 @@ namespace Unity_Accessibility
 						Debug.Log("Unity GUI Accessibility inactive - Enable through the Tools menu.");
 			*/
 
-			//Debug.Log("NVDA Screen Reader found? " + nvdaController_testIfRunning());
+			Debug.Log("NVDA Screen Reader found? " + (nvdaController_testIfRunning() == 0).ToString());
 
 			//ID = GUIUtility.GetControlID(hashVal, FocusType.Passive);
 		}
@@ -115,8 +130,7 @@ namespace Unity_Accessibility
 			// Say errors out loud
 			if (type == LogType.Error)
 			{
-				if (errorSound != null)
-					PlayClip(errorSound);
+				PlayClip(errorSound);
 
 				Unity_GUI_Accessibility.nvdaController_cancelSpeech();
 				string errorText = "Error";
@@ -167,19 +181,19 @@ namespace Unity_Accessibility
 
 		//////////////////////////////////////////////////////////////////////////
 
-		/*
-				static public void StateChange()
-				{
-					//Debug.Log("State Change Called");
-					if (isPlaying && !EditorApplication.isPlaying)
-					{
-						nvdaController_cancelSpeech();
-						nvdaController_speakText("Stopping Game Mode.");
-						isPlaying = false;
-						EditorApplication.playmodeStateChanged -= StateChange;
-					}
-				}
-		*/
+		static public void StateChange()
+		{
+			//Debug.Log("State Change Called");
+			if (isPlaying && !EditorApplication.isPlaying)
+			{
+				PlayClip(leavePlayModeSound);
+				//Debug.Log("Entering Game Mode");
+				// 						nvdaController_cancelSpeech();
+				// 						nvdaController_speakText("Stopping Game Mode.");
+				isPlaying = false;
+				EditorApplication.playmodeStateChanged -= StateChange;
+			}
+		}
 
 		//////////////////////////////////////////////////////////////////////////
 
@@ -288,8 +302,7 @@ namespace Unity_Accessibility
 						// Hence the counter.
 						if (compileErrorCounter == 0)
 						{
-							if (errorSound != null)
-								PlayClip(errorSound);
+							PlayClip(errorSound);
 
 							++compileErrorCounter;
 						}
@@ -305,10 +318,12 @@ namespace Unity_Accessibility
 					{
 						if (!isPlaying)
 						{
-							nvdaController_cancelSpeech();
-							nvdaController_speakText("Entering Game Mode.");
+							//nvdaController_cancelSpeech();
+							//nvdaController_speakText("Entering Game Mode.");
+							Debug.Log("Entering Game Mode");
+							PlayClip(enterPlayModeSound);
 							isPlaying = true;
-							//							EditorApplication.playmodeStateChanged += StateChange;
+							EditorApplication.playmodeStateChanged += StateChange;
 						}
 					}
 				}
@@ -368,6 +383,8 @@ namespace Unity_Accessibility
 
 		public static void PlayClip(AudioClip clip)
 		{
+			if (clip == null)
+				return;
 
 			var type = typeof(AudioImporter).Assembly.GetType("UnityEditor.AudioUtil");
 			var method = type.GetMethod(
@@ -376,8 +393,8 @@ namespace Unity_Accessibility
 					null,
 					new System.Type[] { typeof(AudioClip) }, null);
 
-			method.Invoke(null, new object[] { clip }	);
-		} 
+			method.Invoke(null, new object[] { clip });
+		}
 
 		//////////////////////////////////////////////////////////////////////////
 	}
