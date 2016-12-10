@@ -11,7 +11,7 @@ namespace Unity_Accessibility
 	[ExecuteInEditMode]
 	public class Unity_GUI_Accessibility
 	{
-#if !UNITY_5_5_OR_NEWER
+#if UNITY_5_5_OR_NEWER
 		[DllImport("nvdaControllerClient64.dll")]
 		public static extern int nvdaController_testIfRunning();
 
@@ -128,7 +128,7 @@ namespace Unity_Accessibility
 						Debug.Log("Unity GUI Accessibility inactive - Enable through the Tools menu.");
 			*/
 
-			Debug.Log("NVDA Screen Reader found? " + (nvdaController_testIfRunning() == 0).ToString());
+			//Debug.Log("NVDA Screen Reader found? " + (nvdaController_testIfRunning() == 0).ToString());
 
 			//ID = GUIUtility.GetControlID(hashVal, FocusType.Passive);
 		}
