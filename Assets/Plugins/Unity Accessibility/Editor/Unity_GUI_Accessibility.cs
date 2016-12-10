@@ -11,6 +11,7 @@ namespace Unity_Accessibility
 	[ExecuteInEditMode]
 	public class Unity_GUI_Accessibility
 	{
+#if !UNITY_5_5_OR_NEWER
 		[DllImport("nvdaControllerClient64.dll")]
 		public static extern int nvdaController_testIfRunning();
 
@@ -19,6 +20,16 @@ namespace Unity_Accessibility
 
 		[DllImport("nvdaControllerClient64.dll")]
 		public static extern int nvdaController_cancelSpeech();
+#else
+		[DllImport("nvdaControllerClient64")]
+		public static extern int nvdaController_testIfRunning();
+
+		[DllImport("nvdaControllerClient64", CharSet = CharSet.Auto)]
+		public static extern int nvdaController_speakText(string text);
+
+		[DllImport("nvdaControllerClient64")]
+		public static extern int nvdaController_cancelSpeech();
+#endif
 
 
 		//static int hashVal = "Unity_GUI_Accessibility".GetHashCode();
@@ -30,7 +41,9 @@ namespace Unity_Accessibility
 		static Object m_CurrentObject = null;
 		static int compileErrorCounter = 0;
 		//static bool isCompiling = false;
-		static bool isPlaying = false;
+		//static bool isPlaying = false;
+		//static bool hasStarted = false;
+		static bool playHelper = false;
 
 		static AudioClip errorSound = null;
 		static AudioClip enterPlayModeSound = null;
@@ -184,14 +197,14 @@ namespace Unity_Accessibility
 		static public void StateChange()
 		{
 			//Debug.Log("State Change Called");
-			if (isPlaying && !EditorApplication.isPlaying)
+//			if (isPlaying && !EditorApplication.isPlaying)
 			{
-				PlayClip(leavePlayModeSound);
+//				PlayClip(leavePlayModeSound);
 				//Debug.Log("Entering Game Mode");
 				// 						nvdaController_cancelSpeech();
 				// 						nvdaController_speakText("Stopping Game Mode.");
-				isPlaying = false;
-				EditorApplication.playmodeStateChanged -= StateChange;
+//				isPlaying = false;
+//				EditorApplication.playmodeStateChanged -= StateChange;
 			}
 		}
 
@@ -203,6 +216,32 @@ namespace Unity_Accessibility
 
 			if (!IsEnabled)
 				return;
+
+			if (playHelper != EditorApplication.isPlaying)
+			{
+				playHelper = EditorApplication.isPlaying;
+				Debug.Log("App is now " + (playHelper ? "playing" : "stopped"));
+				if (!playHelper)
+					PlayClip(leavePlayModeSound);
+				else
+					PlayClip(enterPlayModeSound);
+			}
+
+/*
+			if (isPlaying && !EditorApplication.isPlaying && hasStarted)
+			{
+				Debug.Log("Has stopped");
+				hasStarted = false;
+				isPlaying = false;
+				PlayClip(leavePlayModeSound);
+			}
+
+			if (isPlaying && EditorApplication.isPlaying && !hasStarted)
+			{
+				Debug.Log("Has started");
+				hasStarted = true;
+			}
+*/
 
 			//Event e = Event.current;
 
@@ -316,14 +355,16 @@ namespace Unity_Accessibility
 					}
 					else
 					{
-						if (!isPlaying)
+						//if (!isPlaying)
 						{
 							//nvdaController_cancelSpeech();
 							//nvdaController_speakText("Entering Game Mode.");
-							Debug.Log("Entering Game Mode");
-							PlayClip(enterPlayModeSound);
-							isPlaying = true;
-							EditorApplication.playmodeStateChanged += StateChange;
+							//Debug.Log("Entering Game Mode");
+							//PlayClip(enterPlayModeSound);
+							//isPlaying = true;
+							//hasStarted = false;
+
+							//EditorApplication.playmodeStateChanged += StateChange;
 						}
 					}
 				}
